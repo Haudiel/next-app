@@ -1,10 +1,15 @@
 import LoginForm from '@/components/card-login';
-import NavBar from '@/components/navbar-header';
-import { HamburgerIcon } from '@chakra-ui/icons';
-import { Link } from '@chakra-ui/next-js';
-import { Heading, Button, Box, Flex, IconButton, Spacer, Center, ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
+import { ThemeProvider } from '@emotion/react';
+import { createTheme, useTheme } from '@mui/material';
+import React, { useMemo } from 'react';
+// import { useTheme } from '@mui/material';
 
 const pageOne: React.FC = () => {
+    // const theme = useTheme
+    const globalTheme = useTheme()
+
+    const tableTheme = globalTheme
     const handleLogin = (username: string, password: string) => {
         // Aquí puedes realizar la lógica de autenticación, como enviar los datos al servidor, etc.
         console.log('Username:', username);
@@ -12,7 +17,9 @@ const pageOne: React.FC = () => {
     };
 
     return (
-        <LoginForm onLogin={handleLogin} />
+        <ChakraProvider>
+            <LoginForm onLogin={handleLogin} />
+        </ChakraProvider>
     );
 };
 

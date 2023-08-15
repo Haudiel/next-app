@@ -1,7 +1,6 @@
 import LoginForm from '@/components/card-login';
 import NavBar from '@/components/navbar-header';
-import { HamburgerIcon } from '@chakra-ui/icons';
-import { Heading, Button, Box, Flex, IconButton, Spacer, Center, ChakraProvider } from '@chakra-ui/react';
+import { Center, ChakraProvider } from '@chakra-ui/react';
 
 const Home: React.FC = () => {
   const handleLogin = (username: string, password: string) => {
@@ -11,12 +10,12 @@ const Home: React.FC = () => {
   };
 
   return (
-    <ChakraProvider>
-      <NavBar />
-      <Center h="70vh">
-        <LoginForm onLogin={handleLogin} />
-      </Center>
-    </ChakraProvider>
+      <ChakraProvider>
+        <NavBar />
+        <Center h="70vh">
+          <LoginForm onLogin={handleLogin} />
+        </Center>
+      </ChakraProvider>
   );
 };
 
