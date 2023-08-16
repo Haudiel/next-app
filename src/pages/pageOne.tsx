@@ -1,4 +1,5 @@
 import LoginForm from '@/components/card-login';
+import Example from '@/components/table';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ThemeProvider } from '@emotion/react';
 import { createTheme, useTheme } from '@mui/material';
@@ -18,7 +19,8 @@ const pageOne: React.FC = () => {
 
     return (
         <ChakraProvider>
-            <LoginForm onLogin={handleLogin} />
+            {/* <LoginForm onLogin={handleLogin} /> */}
+            <Example/>
         </ChakraProvider>
     );
 };
