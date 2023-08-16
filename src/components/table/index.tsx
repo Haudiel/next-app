@@ -199,7 +199,7 @@ const Example = () => {
                     )}
                     renderTopToolbarCustomActions={() => (
                         <Button
-                            color="secondary"
+                            color="error"
                             onClick={() => setCreateModalOpen(true)}
                             variant="contained"
                         >
@@ -272,7 +272,7 @@ export const CreateNewAccountModal = ({
             </DialogContent>
             <DialogActions sx={{ p: '1.25rem' }}>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button color="secondary" onClick={handleSubmit} variant="contained">
+                <Button color="error" onClick={handleSubmit} variant="contained">
                     Create New Account
                 </Button>
             </DialogActions>

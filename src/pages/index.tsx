@@ -12,9 +12,7 @@ const Home: React.FC = () => {
   return (
       <ChakraProvider>
         <NavBar />
-        <Center h="70vh">
           <LoginForm onLogin={handleLogin} />
-        </Center>
       </ChakraProvider>
   );
 };
