@@ -30,8 +30,8 @@ import {
   FiBell,
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
-import Example from '../table'
-import axios from 'axios'
+import Example from '../edit-table'
+import TablaSolicitud from '../table'
 
 interface LinkItemProps {
   name: string
@@ -200,7 +200,8 @@ const SidebarWithHeader = () => {
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4">
-        <Example/>
+        {/* <Example/> */}
+        <TablaSolicitud/>
       </Box>
     </Box>
   )
