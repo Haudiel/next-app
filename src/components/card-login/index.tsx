@@ -20,7 +20,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const handleCheckAccess = async () => {
         try {
             const response = await axios.get<ResponseData>(`https://localhost:7063/AdminUser/Access?emplid=${employeeNumber}`)
-
+            localStorage.setItem('noEmpleado', employeeNumber)
             setAccessMessage(response.data.mensaje);
             if (response.data.mensaje === 'Access') {
                 setShowSuccessAlert(true);

@@ -32,6 +32,8 @@ import {
 import { IconType } from 'react-icons'
 import Example from '../edit-table'
 import TablaSolicitud from '../table'
+import axios from 'axios'
+import { useState, useEffect } from 'react'
 
 interface LinkItemProps {
   name: string
@@ -51,6 +53,14 @@ interface   MobileProps extends FlexProps {
 
 interface SidebarProps extends BoxProps {
   onClose: () => void
+}
+
+interface EmployeeData {
+  employeeID: string;
+  name: string;
+  supervisor: string;
+  descr: string;
+  status: string;
 }
 
 const LinkItems: Array<LinkItemProps> = [
@@ -121,6 +131,22 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
 }
 
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+  const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
+  const noEmpelado = localStorage.getItem('noEmpleado')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`https://localhost:7063/AdminUser/GetData?emplid=${noEmpelado}`);
+        setEmployeeData(response.data);
+      } catch (error) {
+        console.error('Error fetching employee data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -165,9 +191,9 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2">
-                  <Text fontSize="sm">AQUIIIIIII</Text>
+                  <Text fontSize="sm">{employeeData?.name}</Text>
                   <Text fontSize="xs" color="gray.600">
-                    Admin
+                    {employeeData?.descr}
                   </Text>
                 </VStack>
               </HStack>

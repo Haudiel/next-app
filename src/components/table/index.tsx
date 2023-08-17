@@ -213,7 +213,7 @@ const TablaSolicitud = () => {
                     }}
                     columns={columns}
                     data={tableData}
-                    editingMode='modal'
+                    editingMode='row'
                     enableColumnOrdering
                     enableEditing
                     onEditingRowSave={handleSaveRowEdits}

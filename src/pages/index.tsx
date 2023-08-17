@@ -1,6 +1,6 @@
 import LoginForm from '@/components/card-login';
 import NavBar from '@/components/navbar-header';
-import { Center, ChakraProvider } from '@chakra-ui/react';
+import { Center, ChakraProvider, useDisclosure } from '@chakra-ui/react';
 
 const Home: React.FC = () => {
   const handleLogin = (username: string, password: string) => {
@@ -9,9 +9,11 @@ const Home: React.FC = () => {
     console.log('Password:', password);
   };
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   return (
       <ChakraProvider>
-        <NavBar />
+        <NavBar/>
           <LoginForm onLogin={handleLogin} />
       </ChakraProvider>
   );

@@ -84,12 +84,12 @@ const Example = () => {
 
 const FileInput = () => {
     const [value, setValue] = React.useState(null)
-  
+
     const handleChange = (newValue: any) => {
-      setValue(newValue)
+        setValue(newValue)
     }
-  
-    return <MuiFileInput value={value} onChange={handleChange} />
-  }
+
+    return <MuiFileInput value={value} onChange={handleChange} variant='standard' />
+}
 
 export default Example;
