@@ -31,7 +31,7 @@ import {
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
 import Example from '../edit-table'
-import TablaSolicitud from '../table'
+import TablaSolicitud from '../table-final'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 
@@ -60,6 +60,7 @@ interface EmployeeData {
   name: string;
   supervisor: string;
   descr: string;
+  Photo: string;
   status: string;
 }
 
@@ -183,7 +184,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 <Avatar
                   size={'sm'}
                   src={
-                    'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+                    employeeData?.Photo
                   }
                 />
                 <VStack

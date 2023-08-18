@@ -29,9 +29,9 @@ export type Solicitud = {
     critico: string;
     noParteFabricante: string;
     marca: string;
-    descripción: string;
-    frecuenciaCambio: string;
-    cantidad: string;
+    descripcion: string;
+    frecuenciaCambio: number;
+    cantidad: number;
     fechaSolicitud: string;
     fechaVencimiento: string;
     lineaEstacion: string;
@@ -148,7 +148,7 @@ const TablaSolicitud = () => {
                 }),
             },
             {
-                accessorKey: 'descripción',
+                accessorKey: 'descripcion',
                 header: 'Descripcion',
                 size: 120,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
@@ -161,6 +161,7 @@ const TablaSolicitud = () => {
                 size: 120,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
+                    type: 'number'
                 }),
             },
             {
@@ -169,6 +170,7 @@ const TablaSolicitud = () => {
                 size: 120,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
+                    type: 'number'
                 }),
             },
             {
@@ -213,7 +215,7 @@ const TablaSolicitud = () => {
                     }}
                     columns={columns}
                     data={tableData}
-                    editingMode='row'
+                    editingMode='modal'
                     enableColumnOrdering
                     enableEditing
                     onEditingRowSave={handleSaveRowEdits}

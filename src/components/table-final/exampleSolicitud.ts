@@ -1,4 +1,21 @@
-import { Solicitud } from './index';
+export type Solicitud = {
+    nombreSolicitante: string;
+    departamento: string;
+    critico: string;
+    noParteFabricante: string;
+    marca: string;
+    descripcion: string;
+    frecuenciaCambio: number;
+    cantidad: number;
+    fechaSolicitud: string;
+    fechaVencimiento: string;
+    lineaEstacion: string;
+    justificacionAlta: string;
+    folioPedido: string;
+    compradorAsignado: string;
+    tipoDeProyecto: string;
+    documentoPDF: string;
+}
 
 export const dataSolicitud: Solicitud[] = [
     {
@@ -17,6 +34,6 @@ export const dataSolicitud: Solicitud[] = [
         folioPedido: '202317080810',
         compradorAsignado: 'Christian Rivera',
         tipoDeProyecto: 'Asignacion',
-        documentoPDF: 'PDF'
+        documentoPDF: ''
     }
 ]
