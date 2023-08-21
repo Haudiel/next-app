@@ -2,195 +2,13 @@ import { MRT_Cell, MRT_ColumnDef, MRT_Row, MaterialReactTable, MaterialReactTabl
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Stack, TextField, ThemeProvider, Tooltip, createTheme } from "@mui/material";
 import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { Button as ChakraButton, ChakraProvider, Text, chakra, Select } from '@chakra-ui/react';
-import { MuiFileInput } from "mui-file-input";
 import { dataSolicitud, type Solicitud } from "./exampleSolicitud";
 import { Edit, Delete, AttachFileOutlined } from "@mui/icons-material";
 import { generateFolio } from "@/utils/folio";
 
-interface CreateModalProps {
-    columns: MRT_ColumnDef<Solicitud>[];
-    onClose: () => void;
-    onSubmit: (values: Solicitud) => void;
-    open: boolean;
-}
-
-export const CreateNewSolicitudModal = ({
-    open,
-    columns,
-    onClose,
-    onSubmit,
-}: CreateModalProps) => {
-    const [values, setValues] = useState<any>(() =>
-        columns.reduce((acc, column) => {
-            acc[column.accessorKey ?? ''] = '';
-            return acc;
-        }, {} as any),
-    );
-
-    const handleSubmit = () => {
-        //put your validation logic here
-        onSubmit(values);
-        onClose();
-    };
-
-    return (
-        <Dialog open={open}>
-            <DialogTitle textAlign='center'>Agregar material</DialogTitle>
-            <DialogContent>
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <Stack
-                        sx={{
-                            width: '100%',
-                            minWidth: { xs: '300px', sm: '360px', md: '400px' },
-                            gap: '1.5rem',
-                        }}
-                    >
-                        <TextField
-                            id="outlined-select-currency"
-                            key='critico'
-                            name='critico'
-                            select
-                            label="Critico"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        >
-                            <MenuItem value='SI'>SI</MenuItem>
-                            <MenuItem value='NO'>NO</MenuItem>
-                        </TextField>
-                        <TextField
-                            key='noParteFabricante'
-                            name='noParteFabricante'
-                            required
-                            id="outlined-required"
-                            label="Número de parte"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                        <TextField
-                            required
-                            key='marca'
-                            name='marca'
-                            id="outlined-required"
-                            label="Marca"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                        <TextField
-                            required
-                            key='descripcion'
-                            name='descripcion'
-                            id="outlined-required"
-                            label="Descripción"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                        <TextField
-                            id="outlined-number"
-                            key='frecuenciaCambio'
-                            name='frecuenciaCambio'
-                            label="Frecuencia de cambio"
-                            type="number"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                        <TextField
-                            id="outlined-number"
-                            key='cantidad'
-                            name='cantidad'
-                            label="Cantidad"
-                            type="number"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                        <TextField
-                            required
-                            key='lineaEstacion'
-                            name='lineaEstacion'
-                            id="outlined-required"
-                            label="Linea o estación"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                        <TextField
-                            required
-                            key='justificacionAlta'
-                            name='justificacionAlta'
-                            id="outlined-required"
-                            label="Justificación de la alta"
-                            onChange={(e) =>
-                                setValues({ ...values, [e.target.name]: e.target.value })
-                            }
-                        />
-                    </Stack>
-                </form>
-            </DialogContent>
-            <DialogActions sx={{ p: '1.25rem' }}>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button color="error" onClick={handleSubmit} variant="contained">
-                    Agregar Material
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
-
-const CustomFileInput = () => {
-    const [fileList, setFileList] = useState<FileList | null>(null);
-    const inputRef = useRef<HTMLInputElement | null>(null);
-
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setFileList(e.target.files);
-    };
-
-    const handleUploadClick = () => {
-        inputRef.current?.click();
-        if (!fileList) {
-            return;
-        }
-
-        // 👇 Create new FormData object and append files
-        const data = new FormData();
-        files.forEach((file, i) => {
-            data.append(`file-${i}`, file, file.name);
-        });
-
-    };
-    const files = fileList ? [...fileList] : [];
-
-    return (
-        <>
-
-            <IconButton onClick={handleUploadClick}>
-                <AttachFileOutlined />
-            </IconButton>   
-            <div>
-                {/* 👇 Notice the `display: hidden` on the input */}
-                <input
-                    type="file"
-                    ref={inputRef}
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                    multiple
-                />
-                <Text>
-                    {files.length} archivos seleccionados
-                </Text>
-            </div>
-        </>
-    );
-}
-
 
 const TablaSolicitud = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [values, setValues] = useState<any>()
     const [tableData, setTableData] = useState<Solicitud[]>(() => dataSolicitud);
     const [validationErrors, setValidationErrors] = useState<{
         [cellId: string]: string;
@@ -428,6 +246,184 @@ const TablaSolicitud = () => {
             </ThemeProvider>
         </>
     )
+}
+
+interface CreateModalProps {
+    columns: MRT_ColumnDef<Solicitud>[];
+    onClose: () => void;
+    onSubmit: (values: Solicitud) => void;
+    open: boolean;
+}
+export const CreateNewSolicitudModal = ({
+    open,
+    columns,
+    onClose,
+    onSubmit,
+}: CreateModalProps) => {
+    const [values, setValues] = useState<any>(() =>
+        columns.reduce((acc, column) => {
+            acc[column.accessorKey ?? ''] = '';
+            return acc;
+        }, {} as any),
+    );
+
+    const handleSubmit = () => {
+        onSubmit(values);
+        onClose();
+    };
+
+    return (
+        <Dialog open={open}>
+            <DialogTitle textAlign='center'>Agregar material</DialogTitle>
+            <DialogContent>
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <Stack
+                        sx={{
+                            width: '100%',
+                            minWidth: { xs: '300px', sm: '360px', md: '400px' },
+                            gap: '1.5rem',
+                        }}
+                    >
+                        <TextField
+                            id="outlined-select-currency"
+                            key='critico'
+                            name='critico'
+                            select
+                            label="Critico"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        >
+                            <MenuItem value='SI'>SI</MenuItem>
+                            <MenuItem value='NO'>NO</MenuItem>
+                        </TextField>
+                        <TextField
+                            key='noParteFabricante'
+                            name='noParteFabricante'
+                            required
+                            id="outlined-required"
+                            label="Número de parte"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                        <TextField
+                            required
+                            key='marca'
+                            name='marca'
+                            id="outlined-required"
+                            label="Marca"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                        <TextField
+                            required
+                            key='descripcion'
+                            name='descripcion'
+                            id="outlined-required"
+                            label="Descripción"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                        <TextField
+                            id="outlined-number"
+                            key='frecuenciaCambio'
+                            name='frecuenciaCambio'
+                            label="Frecuencia de cambio"
+                            type="number"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                        <TextField
+                            id="outlined-number"
+                            key='cantidad'
+                            name='cantidad'
+                            label="Cantidad"
+                            type="number"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                        <TextField
+                            required
+                            key='lineaEstacion'
+                            name='lineaEstacion'
+                            id="outlined-required"
+                            label="Linea o estación"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                        <TextField
+                            required
+                            key='justificacionAlta'
+                            name='justificacionAlta'
+                            id="outlined-required"
+                            label="Justificación de la alta"
+                            onChange={(e) =>
+                                setValues({ ...values, [e.target.name]: e.target.value })
+                            }
+                        />
+                    </Stack>
+                </form>
+            </DialogContent>
+            <DialogActions sx={{ p: '1.25rem' }}>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button color="error" onClick={handleSubmit} variant="contained">
+                    Agregar Material
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+const CustomFileInput = () => {
+    const [fileList, setFileList] = useState<FileList | null>(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFileList(e.target.files);
+    };
+
+    const handleUploadClick = () => {
+        inputRef.current?.click();
+        if (!fileList) {
+            return;
+        }
+
+        // 👇 Create new FormData object and append files
+        const data = new FormData();
+        files.forEach((file, i) => {
+            data.append(`file-${i}`, file, file.name);
+        });
+
+    };
+    const files = fileList ? [...fileList] : [];
+
+    return (
+        <>
+
+            <IconButton onClick={handleUploadClick}>
+                <AttachFileOutlined />
+            </IconButton>
+            <div>
+                {/* 👇 Notice the `display: hidden` on the input */}
+                <input
+                    type="file"
+                    ref={inputRef}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    multiple
+                />
+                <Text>
+                    {files.length} archivos seleccionados
+                </Text>
+            </div>
+        </>
+    );
 }
 
 export default TablaSolicitud
