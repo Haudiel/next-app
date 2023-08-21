@@ -30,10 +30,10 @@ import {
   FiBell,
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
-import Example from '../edit-table'
 import TablaSolicitud from '../table-final'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
+import React from 'react'
 
 interface LinkItemProps {
   name: string
@@ -47,8 +47,6 @@ interface NavItemProps extends FlexProps {
 
 interface   MobileProps extends FlexProps {
   onOpen: () => void,
-  // name: () => string,
-  // descr: () => string
 }
 
 interface SidebarProps extends BoxProps {
@@ -60,7 +58,7 @@ interface EmployeeData {
   name: string;
   supervisor: string;
   descr: string;
-  Photo: string;
+  photo: string;
   status: string;
 }
 
@@ -141,7 +139,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         const response = await axios.get(`https://localhost:7063/AdminUser/GetData?emplid=${noEmpelado}`);
         setEmployeeData(response.data);
       } catch (error) {
-        console.error('Error fetching employee data:', error);
+        console.error('Error fetching employee data:', error);  
       }
     };
 
@@ -184,7 +182,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 <Avatar
                   size={'sm'}
                   src={
-                    employeeData?.Photo
+                    employeeData?.photo
                   }
                 />
                 <VStack
@@ -227,7 +225,6 @@ const SidebarWithHeader = () => {
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4">
-        {/* <Example/> */}
         <TablaSolicitud/>
       </Box>
     </Box>

@@ -1,6 +1,5 @@
 import LoginForm from '@/components/card-login';
 import SidebarWithHeader from '@/components/side-bar';
-import Example from '@/components/table';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ThemeProvider } from '@emotion/react';
 import { createTheme, useTheme } from '@mui/material';
@@ -21,8 +20,6 @@ const pageOne: React.FC = () => {
     return (
         <ChakraProvider>
             <SidebarWithHeader/>
-            {/* <Example/> */}
-            {/* <LoginForm onLogin={handleLogin} /> */}
         </ChakraProvider>
     );
 };

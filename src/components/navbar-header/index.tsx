@@ -1,5 +1,6 @@
 import { Box, Flex, Image, useColorModeValue} from '@chakra-ui/react';
 import Logo from '../logos/index';
+import React from 'react';
 
 const NavBar: React.FC = () => {
   return (

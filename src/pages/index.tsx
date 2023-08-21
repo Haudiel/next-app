@@ -1,6 +1,7 @@
 import LoginForm from '@/components/card-login';
 import NavBar from '@/components/navbar-header';
 import { Center, ChakraProvider, useDisclosure } from '@chakra-ui/react';
+import React from 'react';
 
 const Home: React.FC = () => {
   const handleLogin = (username: string, password: string) => {

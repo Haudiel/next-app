@@ -1,9 +1,11 @@
 import { MRT_Cell, MRT_ColumnDef, MRT_Row, MaterialReactTable, MaterialReactTableProps } from "material-react-table";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Stack, TextField, ThemeProvider, Tooltip, createTheme } from "@mui/material";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { Button as ChakraButton, ChakraProvider, Text, chakra, Select } from '@chakra-ui/react';
 import { MuiFileInput } from "mui-file-input";
 import { dataSolicitud, type Solicitud } from "./exampleSolicitud";
 import { Edit, Delete, AttachFileOutlined } from "@mui/icons-material";
+import { generateFolio } from "@/utils/folio";
 
 interface CreateModalProps {
     columns: MRT_ColumnDef<Solicitud>[];
@@ -24,7 +26,6 @@ export const CreateNewSolicitudModal = ({
             return acc;
         }, {} as any),
     );
-    const [fileName, setFileName] = useState<string>('');
 
     const handleSubmit = () => {
         //put your validation logic here
@@ -140,102 +141,61 @@ export const CreateNewSolicitudModal = ({
     )
 }
 
-interface FileInputModalProps {
-    open: boolean;
-    onClose: () => void;
-}
+const CustomFileInput = () => {
+    const [fileList, setFileList] = useState<FileList | null>(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
-const FileInput = () => {
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-
-    const handleOpenModal = () => {
-        setCreateModalOpen(true);
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFileList(e.target.files);
     };
 
-    const handleCloseModal = () => {
-        setCreateModalOpen(false);
+    const handleUploadClick = () => {
+        inputRef.current?.click();
+        if (!fileList) {
+            return;
+        }
+
+        // 👇 Create new FormData object and append files
+        const data = new FormData();
+        files.forEach((file, i) => {
+            data.append(`file-${i}`, file, file.name);
+        });
+
     };
+    const files = fileList ? [...fileList] : [];
 
     return (
         <>
-            <IconButton onClick={handleOpenModal}>
+
+            <IconButton onClick={handleUploadClick}>
                 <AttachFileOutlined />
-            </IconButton>
-            <FileInputModal open={createModalOpen} onClose={handleCloseModal} />
+            </IconButton>   
+            <div>
+                {/* 👇 Notice the `display: hidden` on the input */}
+                <input
+                    type="file"
+                    ref={inputRef}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    multiple
+                />
+                <Text>
+                    {files.length} archivos seleccionados
+                </Text>
+            </div>
         </>
-    )
+    );
 }
 
-const FileInputModal: React.FC<FileInputModalProps> = ({ open, onClose }) => {
-    const [value1, setValue1] = React.useState<File | null>(null);
-    const [value2, setValue2] = React.useState<File | null>(null);
-    const [value3, setValue3] = React.useState<File | null>(null);
-
-    const handleChange1 = (newValue: File | null) => {
-        setValue1(newValue);
-    };
-
-    const handleChange2 = (newValue: File | null) => {
-        setValue2(newValue);
-    };
-
-    const handleChange3 = (newValue: File | null) => {
-        setValue3(newValue);
-    };
-
-    return (
-
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle textAlign='center'>Agregar documentos</DialogTitle>
-            <DialogContent>
-                <form >
-                    <Stack
-                        sx={{
-                            width: '100%',
-                            minWidth: { xs: '300px', sm: '360px', md: '400px' },
-                            gap: '1.5rem',
-                        }}
-                    >
-                        <MuiFileInput
-                            value={value1}
-                            key='documentoPDF1'
-                            name='documentoPDF1'
-                            variant='outlined'
-                            onChange={handleChange1}
-                        />
-                        <MuiFileInput
-                            value={value2}
-                            key='documentoPDF2'
-                            name='documentoPDF2'
-                            variant='outlined'
-                            onChange={handleChange2}
-                        />
-                        <MuiFileInput
-                            value={value3}
-                            key='documentoPDF3'
-                            name='documentoPDF3'
-                            variant='outlined'
-                            onChange={handleChange3}
-                        />
-                    </Stack>
-                </form>
-            </DialogContent>
-            <DialogActions sx={{ p: '1.25rem' }}>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button color="error" variant="contained">
-                    Agregar PDF
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
 
 const TablaSolicitud = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [values, setValues] = useState<any>()
     const [tableData, setTableData] = useState<Solicitud[]>(() => dataSolicitud);
     const [validationErrors, setValidationErrors] = useState<{
         [cellId: string]: string;
     }>({});
+    const folio = generateFolio();
 
     const handleCreateNewRow = (values: Solicitud) => {
         tableData.push(values);
@@ -358,7 +318,7 @@ const TablaSolicitud = () => {
                 accessorKey: 'documentoPDF',
                 header: 'PDF',
                 size: 120,
-                Cell: FileInput
+                Cell: CustomFileInput
 
             },
         ],
@@ -368,6 +328,42 @@ const TablaSolicitud = () => {
     return (
         <>
             <ThemeProvider theme={createTheme({})}>
+                <ChakraProvider>
+                    <chakra.div
+                        pb={2}
+                    >
+                        <Stack
+                            bgcolor='white'
+                            p={2}
+                            boxShadow='md'
+                        >
+                            <chakra.div
+                                display='flex'
+                                justifyContent='space-between'
+                            >
+                                <Text
+                                    fontSize='lg'
+                                >
+                                    Folio: {folio}
+                                </Text>
+                                <chakra.div width={500} display='flex' justifyContent='center'>
+                                    <Text p={3}>
+                                        Seleccionar Compador:
+                                    </Text>
+                                    <Select maxW={300} variant='outline' size='lg' placeholder="Asignar comprador" >
+                                        <option value='option1'>Option 1</option>
+                                        <option value='option2'>Option 2</option>
+                                        <option value='option3'>Option 3</option>
+                                    </Select>
+                                </chakra.div>
+                                {/* <chakra.input
+                                    display='none'
+                                    type='file'
+                                ></chakra.input> */}
+                            </chakra.div>
+                        </Stack>
+                    </chakra.div>
+                </ChakraProvider>
                 <MaterialReactTable
                     displayColumnDefOptions={{
                         'mrt-row-actions': {
@@ -406,8 +402,23 @@ const TablaSolicitud = () => {
                         >
                             Agregar Material
                         </Button>
+
                     )}
                 />
+                <ChakraProvider>
+                    <chakra.div
+                        display='flex'
+                        justifyContent='flex-end'
+                        p={3}
+                    >
+                        <ChakraButton
+                            colorScheme='red'
+                            size='md'
+                        >
+                            Submit
+                        </ChakraButton>
+                    </chakra.div>
+                </ChakraProvider>
                 <CreateNewSolicitudModal
                     columns={columns}
                     open={createModalOpen}
