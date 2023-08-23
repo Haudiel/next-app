@@ -18,32 +18,27 @@ import {
   FlexProps,
   Menu,
   MenuButton,
-  Image,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay
+  Image
 } from '@chakra-ui/react'
 import {
   FiHome,
   FiTrendingUp,
+  FiCompass,
+  FiStar,
+  FiSettings,
   FiMenu,
   FiBell,
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
+import TablaSolicitud from '../table-final'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import React from 'react'
-import InsertModal from '../insert-modal'
+import CardSelect from '@/components/card-select';
 
 interface LinkItemProps {
   name: string
   icon: IconType
-  href: string
 }
 
 interface NavItemProps extends FlexProps {
@@ -51,8 +46,8 @@ interface NavItemProps extends FlexProps {
   children: React.ReactNode
 }
 
-interface MobileProps extends FlexProps {
-  onOpend: () => void,
+interface   MobileProps extends FlexProps {
+  onOpen: () => void,
 }
 
 interface SidebarProps extends BoxProps {
@@ -69,8 +64,11 @@ interface EmployeeData {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome, href: '/cardSelect' },
-  { name: 'Solicitud', icon: FiTrendingUp, href: '/cardSelect' },
+  { name: 'Home', icon: FiHome },
+  { name: 'Trending', icon: FiTrendingUp },
+  { name: 'Explore', icon: FiCompass },
+  { name: 'Favourites', icon: FiStar },
+  { name: 'Settings', icon: FiSettings },
 ]
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -85,14 +83,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       h="full"
       {...rest}>
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Image src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Magna_logo.svg/2560px-Magna_logo.svg.png' />
+        <Image src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Magna_logo.svg/2560px-Magna_logo.svg.png'/>
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem
-          key={link.name}
-          icon={link.icon}
-        >
+        <NavItem key={link.name} icon={link.icon}>
           {link.name}
         </NavItem>
       ))}
@@ -106,8 +101,7 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
       as="a"
       href="#"
       style={{ textDecoration: 'none' }}
-      _focus={{ boxShadow: 'none' }}
-    >
+      _focus={{ boxShadow: 'none' }}>
       <Flex
         align="center"
         p="4"
@@ -136,25 +130,8 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
   )
 }
 
-const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
-  const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
-  const noEmpelado = localStorage.getItem('noEmpleado')
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [scrollBehavior, setScrollBehavior] = React.useState('inside')
-  const btnRef = React.useRef(null)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`https://localhost:7063/AdminUser/GetData?emplid=${noEmpelado}`);
-        setEmployeeData(response.data);
-      } catch (error) {
-        console.error('Error fetching employee data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+  const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null)
 
   return (
     <Flex
@@ -169,7 +146,7 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
       {...rest}>
       <IconButton
         display={{ base: 'flex', md: 'none' }}
-        onClick={onOpend}
+        onClick={onOpen}
         variant="outline"
         aria-label="open menu"
         icon={<FiMenu />}
@@ -184,30 +161,6 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
       </Text>
 
       <HStack spacing={{ base: '0', md: '6' }}>
-        //*Agregar MODAL
-        <Button mt={3} ref={btnRef} onClick={onOpen}>
-          Crear Solicitud
-        </Button>
-
-        <Modal
-          onClose={onClose}
-          finalFocusRef={btnRef}
-          isOpen={isOpen}
-          scrollBehavior={'inside'}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              Aqui
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={onClose}>Close</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-
         <IconButton size="lg" variant="ghost" aria-label="open menu" icon={<FiBell />} />
         <Flex alignItems={'center'}>
           <Menu>
@@ -239,7 +192,7 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
 }
 
 const SidebarWithHeader = () => {
-
+  
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -257,10 +210,9 @@ const SidebarWithHeader = () => {
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav onOpend={onOpen} />
-        //*Agregar info aqui
+      <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4">
-
+        <CardSelect/>
       </Box>
     </Box>
   )

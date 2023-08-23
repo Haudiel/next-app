@@ -5,6 +5,8 @@ import { Button as ChakraButton, ChakraProvider, Text, chakra, Select } from '@c
 import { dataSolicitud, type Solicitud } from "./exampleSolicitud";
 import { Edit, Delete, AttachFileOutlined } from "@mui/icons-material";
 import { generateFolio } from "@/utils/folio";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 
 const TablaSolicitud = () => {
@@ -18,6 +20,7 @@ const TablaSolicitud = () => {
     const handleCreateNewRow = (values: Solicitud) => {
         tableData.push(values);
         setTableData([...tableData]);
+        console.log(tableData)
     }
 
     const handleSaveRowEdits: MaterialReactTableProps<Solicitud>['onEditingRowSave'] =
@@ -159,11 +162,28 @@ const TablaSolicitud = () => {
                                 display='flex'
                                 justifyContent='space-between'
                             >
-                                <Text
-                                    fontSize='lg'
-                                >
-                                    Folio: {folio}
-                                </Text>
+                                <chakra.div>
+                                    <Text
+                                        fontSize='lg'
+                                    >
+                                        Folio: {folio}
+                                    </Text>
+                                    <ThemeProvider theme={createTheme({})}>
+                                        <chakra.div
+                                            display='flex' 
+                                            justifyContent='center'
+                                        >
+                                            <Text
+                                                fontSize='lg'
+                                            >
+                                                Fecha de vencimiento:
+                                            </Text>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker />
+                                            </LocalizationProvider>
+                                        </chakra.div>
+                                    </ThemeProvider>
+                                </chakra.div>
                                 <chakra.div width={500} display='flex' justifyContent='center'>
                                     <Text p={3}>
                                         Seleccionar Compador:
@@ -246,6 +266,12 @@ const TablaSolicitud = () => {
             </ThemeProvider>
         </>
     )
+}
+
+const insertarSolicitud = () => {
+    const apiUrl = ''
+
+    
 }
 
 interface CreateModalProps {
@@ -425,5 +451,7 @@ const CustomFileInput = () => {
         </>
     );
 }
+
+
 
 export default TablaSolicitud
