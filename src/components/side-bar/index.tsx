@@ -26,7 +26,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay
+  ModalOverlay,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Select,
+  NumberInput,
+  NumberInputField,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInputStepper
 } from '@chakra-ui/react'
 import {
   FiHome,
@@ -39,6 +49,9 @@ import axios from 'axios'
 import { useState, useEffect } from 'react'
 import React from 'react'
 import InsertModal from '../insert-modal'
+import { Field, Form, Formik } from 'formik'
+import { generateFolio } from '@/utils/folio'
+import { Solicitud } from '../table-final/exampleSolicitud';
 
 interface LinkItemProps {
   name: string
@@ -66,6 +79,25 @@ interface EmployeeData {
   descr: string;
   photo: string;
   status: string;
+}
+
+interface ValueData {
+  nombreSolicitante: string;
+  departamento: string;
+  critico: string;
+  noParteFabricante: string;
+  marca: string;
+  descripcion: string;
+  frecuenciaCambio: number;
+  cantidad: number;
+  fechaSolicitud: string;
+  fechaVencimiento: string;
+  lineaEstacion: string;
+  justificacionAlta: string;
+  folioPedido: string;
+  compradorAsignado: string;
+  tipoDeProyecto: string;
+  documentoPDF: string;
 }
 
 const LinkItems: Array<LinkItemProps> = [
@@ -140,8 +172,8 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
   const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
   const noEmpelado = localStorage.getItem('noEmpleado')
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [scrollBehavior, setScrollBehavior] = React.useState('inside')
   const btnRef = React.useRef(null)
+  const [valueData, setValueData] = useState<ValueData>()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,6 +187,8 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
 
     fetchData();
   }, []);
+
+  const folio = generateFolio();
 
   return (
     <Flex
@@ -194,13 +228,207 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
           finalFocusRef={btnRef}
           isOpen={isOpen}
           scrollBehavior={'inside'}
+          size={'xl'}
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
+            <ModalHeader>Crear solicitud</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              Aqui
+              <Formik
+                initialValues={{ 
+                  folioPedido: `${folio}`, 
+                  nombreSolicitante: `${employeeData?.name}`,
+                  departamento: `${employeeData?.descr}`,
+                  fechaSolicitud: '',
+                  fechaVencimiento: '',
+                  critico: '',
+                  noParteFabricante: '',
+                  marca: '',
+                  descripcion: '',
+                }}
+                onSubmit={(values, actions) => {
+                  setTimeout(() => {
+                    alert(JSON.stringify(values, null, 2))
+                    console.log(values)
+                    actions.setSubmitting(false)
+                  }, 1000)
+                }}
+              >
+                {(props) => (
+                  <Form>
+                    <Field name='folioPedido'>
+                      {({ field, form }: any) => (
+                        <FormControl isDisabled>
+                          <FormLabel>Folio</FormLabel>
+                          <Input {...field} placeholder='name' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='nombreSolicitante'>
+                      {({ field, form }: any) => (
+                        <FormControl isDisabled>
+                          <FormLabel>Nombre del solicitante</FormLabel>
+                          <Input {...field} placeholder='name' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='departamento'>
+                      {({ field, form }: any) => (
+                        <FormControl isDisabled>
+                          <FormLabel>Departamento</FormLabel>
+                          <Input {...field} placeholder='name' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='fechaSolicitud'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Fecha de la Solicitud</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="Select Date and Time"
+                            size="md"
+                            type="date"
+                          />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='fechaVencimiento'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Fecha de vencimiento</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="Select Date and Time"
+                            size="md"
+                            type="date"
+                          />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='compradorAsignado'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Comprador a asignar</FormLabel>
+                          <Select {...field} placeholder='Seleccionar'>
+                            <option>Comprador uno</option>
+                            <option>Comprador dos</option>
+                          </Select>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='tipoProyecto'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Tipo de proyecto</FormLabel>
+                          <Input {...field} placeholder='Tipo de proyecto' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='critico'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Critico</FormLabel>
+                          <Select {...field} placeholder='Seleccionar'>
+                            <option value='SI'>Si</option>
+                            <option value='NO'>No</option>
+                          </Select>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='noParteFabricante'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Número de parte del fabricante</FormLabel>
+                          <Input {...field} placeholder='No. Parte' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='marca'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Marca</FormLabel>
+                          <Input {...field} placeholder='Marca' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='descripcion'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Descripción</FormLabel>
+                          <Input {...field} placeholder='Descripción' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='frecuenciaCambio'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Frecuencia de cambio (Dias)</FormLabel>
+                          <NumberInput {...field} min={0}>
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='cantidad'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Cantidad instalada</FormLabel>
+                          <NumberInput {...field} min={0}>
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='lineaEstacion'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Linea o estación donde se utiliza el material</FormLabel>
+                          <Input {...field} placeholder='Linea o estación' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='justificacionAlta'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Justificación de la alta</FormLabel>
+                          <Input {...field} placeholder='Justificación' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='documentoPDF'>
+                      {({ field, form }: any) => (
+                        <FormControl isRequired>
+                          <FormLabel>Fecha de vencimiento</FormLabel>
+                          <Input
+                            {...field}
+                            multiple
+                            size="md"
+                            type="file"
+                          />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Button
+                      mt={4}
+                      colorScheme='teal'
+                      isLoading={props.isSubmitting}
+                      type='submit'
+                    >
+                      Submit
+                    </Button>
+                  </Form>
+                )}
+              </Formik>
             </ModalBody>
             <ModalFooter>
               <Button onClick={onClose}>Close</Button>

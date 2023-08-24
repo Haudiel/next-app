@@ -25,6 +25,7 @@
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.13",
     "feather-icons": "^4.29.0",
+    "formik": "^2.4.3",
     "framer-motion": "^10.15.2",
     "material-react-table": "^1.14.0",
     "mui-file-input": "^3.0.0",
