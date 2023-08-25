@@ -36,7 +36,8 @@ import {
   NumberInputField,
   NumberDecrementStepper,
   NumberIncrementStepper,
-  NumberInputStepper
+  NumberInputStepper,
+  chakra,
 } from '@chakra-ui/react'
 import {
   FiHome,
@@ -46,12 +47,15 @@ import {
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
 import axios from 'axios'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import React from 'react'
-import InsertModal from '../insert-modal'
 import { Field, Form, Formik } from 'formik'
 import { generateFolio } from '@/utils/folio'
 import { Solicitud } from '../table-final/exampleSolicitud';
+import fileToBase64 from '@/utils/base64'
+import MaterialReactTable, { MRT_ColumnDef, MRT_Row } from 'material-react-table'
+import { Tooltip, ThemeProvider, createTheme, IconButton as MuiButton } from '@mui/material'
+import { Delete } from '@mui/icons-material'
 
 interface LinkItemProps {
   name: string
@@ -96,7 +100,7 @@ interface ValueData {
   justificacionAlta: string;
   folioPedido: string;
   compradorAsignado: string;
-  tipoDeProyecto: string;
+  tipoProyecto: string;
   documentoPDF: string;
 }
 
@@ -173,8 +177,41 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
   const noEmpelado = localStorage.getItem('noEmpleado')
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = React.useRef(null)
-  const [valueData, setValueData] = useState<ValueData>()
+  const [valueData, setValueData] = useState<any>({})
+  const [valueDataArray, setValueDataArray] = useState<ValueData[]>([]);
 
+
+  const {
+    folioPedido,
+    nombreSolicitante,
+    departamento,
+    fechaSolicitud,
+    fechaVencimiento,
+    critico,
+    noParteFabricante,
+    marca,
+    descripcion,
+    compradorAsignado,
+    frecuenciaCambio,
+    cantidad,
+    tipoProyecto,
+    lineaEstacion,
+    justificacionAlta,
+    documentoPDF
+  } = valueData;
+
+  const handleDeleteRow = useCallback(
+    (row: MRT_Row<ValueData>) => {
+      if (
+        !confirm(`Are you sure you want to delete ${row.getValue('noParteFabricante')}`)
+      ) {
+        return;
+      }
+      valueDataArray.splice(row.index, 1);
+      setValueDataArray([...valueDataArray]);
+    },
+    [valueDataArray],
+  );
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -190,6 +227,26 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
 
   const folio = generateFolio();
 
+  const columns = useMemo<MRT_ColumnDef<ValueData>[]>(
+    () => [
+      {
+        accessorKey: 'critico', //access nested data with dot notation
+        header: 'Critico',
+        size: 100,
+      },
+      {
+        accessorKey: 'noParteFabricante',
+        header: 'No. Parte',
+        size: 200,
+      },
+      {
+        accessorKey: 'marca', //normal accessorKey
+        header: 'Marca',
+        size: 150,
+      },
+    ],
+    [],
+  );
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -236,8 +293,8 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
             <ModalCloseButton />
             <ModalBody>
               <Formik
-                initialValues={{ 
-                  folioPedido: `${folio}`, 
+                initialValues={{
+                  folioPedido: `${folio}`,
                   nombreSolicitante: `${employeeData?.name}`,
                   departamento: `${employeeData?.descr}`,
                   fechaSolicitud: '',
@@ -246,11 +303,27 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                   noParteFabricante: '',
                   marca: '',
                   descripcion: '',
+                  frecuenciaCambio: 0,
+                  cantidad: 0,
+                  compradorAsignado: '',
+                  tipoProyecto: '',
+                  lineaEstacion: '',
+                  justificacionAlta: '',
+                  documentoPDF: '',
                 }}
                 onSubmit={(values, actions) => {
                   setTimeout(() => {
                     alert(JSON.stringify(values, null, 2))
+                    console.log(JSON.stringify(values, null, 2))
                     console.log(values)
+
+                    const newValueData: ValueData = {
+                      ...values,
+                    };
+
+                    setValueDataArray((prevArray) => [...prevArray, newValueData]);
+                    setValueData(values)
+
                     actions.setSubmitting(false)
                   }, 1000)
                 }}
@@ -365,7 +438,16 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                       {({ field, form }: any) => (
                         <FormControl isRequired>
                           <FormLabel>Frecuencia de cambio (Dias)</FormLabel>
-                          <NumberInput {...field} min={0}>
+                          <NumberInput {...field} min={0}
+                            id='frecuenciaCambio'
+                            name='frecuenciaCambio'
+                            type={"number"}
+                            onChange={v => {
+                              props.setFieldValue('frecuenciaCambio', v);
+                            }}
+                            onBlur={props.handleBlur}
+                            defaultValue={props.initialValues['frecuenciaCambio']}
+                          >
                             <NumberInputField />
                             <NumberInputStepper>
                               <NumberIncrementStepper />
@@ -379,7 +461,16 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                       {({ field, form }: any) => (
                         <FormControl isRequired>
                           <FormLabel>Cantidad instalada</FormLabel>
-                          <NumberInput {...field} min={0}>
+                          <NumberInput {...field} min={0}
+                            id='cantidad'
+                            name='cantidad'
+                            type={"number"}
+                            onChange={v => {
+                              props.setFieldValue('cantidad', v);
+                            }}
+                            onBlur={props.handleBlur}
+                            defaultValue={props.initialValues['cantidad']}
+                          >
                             <NumberInputField />
                             <NumberInputStepper>
                               <NumberIncrementStepper />
@@ -408,12 +499,13 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                     <Field name='documentoPDF'>
                       {({ field, form }: any) => (
                         <FormControl isRequired>
-                          <FormLabel>Fecha de vencimiento</FormLabel>
+                          <FormLabel>Agregar documento PDF</FormLabel>
                           <Input
                             {...field}
                             multiple
                             size="md"
                             type="file"
+
                           />
                         </FormControl>
                       )}
@@ -429,9 +521,35 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                   </Form>
                 )}
               </Formik>
+              <chakra.div
+                pt={3}
+              >
+                <ThemeProvider theme={createTheme({})}>
+                  <MaterialReactTable
+                    columns={columns}
+                    data={valueDataArray}
+                    enableColumnActions={false}
+                    enableTopToolbar={false}
+                    enableBottomToolbar={false}
+                    enableRowActions
+                    renderRowActions={({ row, table }) => (
+                      <Box sx={{ display: 'flex', gap: '1rem' }}>
+                        <Tooltip arrow placement="right" title="Delete">
+                          <IconButton color="error" onClick={() => handleDeleteRow(row)} aria-label={''}>
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    )}
+                  />
+                </ThemeProvider>
+              </chakra.div>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={onClose}>Close</Button>
+              <Button onClick={() => {
+                onClose()
+                setValueDataArray([]);
+              }}>Close</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
