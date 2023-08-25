@@ -28,7 +28,6 @@ import {
   ModalHeader,
   ModalOverlay,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   Input,
   Select,
@@ -51,8 +50,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import React from 'react'
 import { Field, Form, Formik } from 'formik'
 import { generateFolio } from '@/utils/folio'
-import { Solicitud } from '../table-final/exampleSolicitud';
-import fileToBase64 from '@/utils/base64'
 import MaterialReactTable, { MRT_ColumnDef, MRT_Row } from 'material-react-table'
 import { Tooltip, ThemeProvider, createTheme, IconButton as MuiButton } from '@mui/material'
 import { Delete } from '@mui/icons-material'
@@ -179,27 +176,36 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
   const btnRef = React.useRef(null)
   const [valueData, setValueData] = useState<any>({})
   const [valueDataArray, setValueDataArray] = useState<ValueData[]>([]);
-
+  const [responseMessage, setResponseMessage] = useState('');
 
   const {
     folioPedido,
+    numComprador,
+    compradorAsignado,
     nombreSolicitante,
-    departamento,
     fechaSolicitud,
     fechaVencimiento,
     critico,
     noParteFabricante,
     marca,
     descripcion,
-    compradorAsignado,
     frecuenciaCambio,
     cantidad,
     tipoProyecto,
     lineaEstacion,
-    justificacionAlta,
-    documentoPDF
+    justificacionAlta
   } = valueData;
 
+  async function sendData() {
+    try {
+      const response = await axios.post('https://localhost:7063/AdminUser/InsertData', valueData);
+      setResponseMessage(response.data.message);
+    } catch (error) {
+      console.error(error);
+      setResponseMessage('Error al enviar los datos');
+    }
+  }
+  
   const handleDeleteRow = useCallback(
     (row: MRT_Row<ValueData>) => {
       if (
@@ -295,6 +301,7 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
               <Formik
                 initialValues={{
                   folioPedido: `${folio}`,
+                  numComprador: `${employeeData?.employeeID}`,
                   nombreSolicitante: `${employeeData?.name}`,
                   departamento: `${employeeData?.descr}`,
                   fechaSolicitud: '',
@@ -323,6 +330,8 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
 
                     setValueDataArray((prevArray) => [...prevArray, newValueData]);
                     setValueData(values)
+                
+                    sendData();
 
                     actions.setSubmitting(false)
                   }, 1000)
@@ -342,6 +351,14 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                       {({ field, form }: any) => (
                         <FormControl isDisabled>
                           <FormLabel>Nombre del solicitante</FormLabel>
+                          <Input {...field} placeholder='name' />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name='numComprador'>
+                      {({ field, form }: any) => (
+                        <FormControl isDisabled>
+                          <FormLabel>numComprador</FormLabel>
                           <Input {...field} placeholder='name' />
                         </FormControl>
                       )}
