@@ -53,6 +53,7 @@ import { generateFolio } from '@/utils/folio'
 import MaterialReactTable, { MRT_ColumnDef, MRT_Row } from 'material-react-table'
 import { Tooltip, ThemeProvider, createTheme, IconButton as MuiButton } from '@mui/material'
 import { Delete } from '@mui/icons-material'
+import fileToBase64 from '@/utils/base64'
 
 interface LinkItemProps {
   name: string
@@ -196,16 +197,55 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
     justificacionAlta
   } = valueData;
 
+  const [base64Data, setBase64Data] = useState<string | null>(null);
+  const [extension, setExtension] = useState<string | null>(null);
+  const [getFolio, setFolio] = useState<string | null>(null);
+
+  const handleFileInputChange = async (event: any) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      var base = String(reader.result);
+      const ExtensionArchivo = base.split(',')[0] + ',';
+      base = base.split(',')[1];
+      setBase64Data(base)
+      setExtension(ExtensionArchivo)
+      console.log(base)
+      console.log(ExtensionArchivo)
+    }
+  };
+
   async function sendData() {
     try {
-      const response = await axios.post('https://localhost:7063/AdminUser/InsertData', valueData);
+      // const response = await axios.post('https://localhost:7063/AdminUser/InsertData', valueData);
+      valueDataArray.forEach(async (value: ValueData) => {
+
+        const response = await axios.post('https://localhost:7063/AdminUser/InsertData', value);
+
+        setResponseMessage(response.data.message);
+      })
+    } catch (error) {
+      console.error(error);
+      setResponseMessage('Error al enviar los datos');
+    }
+  }
+
+  async function sendDoc() {
+    try {
+      var body = {
+        "Folio" : getFolio,
+        "Documento": base64Data,
+        "Extension": extension
+      }
+      const response = await axios.post('https://localhost:7063/AdminUser/InsertDoc', body)
       setResponseMessage(response.data.message);
     } catch (error) {
       console.error(error);
       setResponseMessage('Error al enviar los datos');
     }
   }
-  
+
   const handleDeleteRow = useCallback(
     (row: MRT_Row<ValueData>) => {
       if (
@@ -328,10 +368,10 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                       ...values,
                     };
 
+                    setFolio(values.folioPedido)
                     setValueDataArray((prevArray) => [...prevArray, newValueData]);
                     setValueData(values)
-                
-                    sendData();
+                    // sendData();
 
                     actions.setSubmitting(false)
                   }, 1000)
@@ -518,11 +558,10 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                         <FormControl isRequired>
                           <FormLabel>Agregar documento PDF</FormLabel>
                           <Input
-                            {...field}
                             multiple
                             size="md"
                             type="file"
-
+                            onChange={handleFileInputChange}
                           />
                         </FormControl>
                       )}
@@ -567,6 +606,12 @@ const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
                 onClose()
                 setValueDataArray([]);
               }}>Close</Button>
+              <Button ml={1} onClick={() => {
+                sendData()
+                sendDoc()
+                onClose()
+                setValueDataArray([]);
+              }}>Enviar</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
