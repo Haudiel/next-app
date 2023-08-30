@@ -48,6 +48,25 @@ export interface ValueData {
     documentoPDF: string;
 }
 
+export interface UpdateSolicitud {
+    folioPedido: string;
+    noParteFabricante: string;
+    descripcion: string;
+    tiempoEntrega: number,
+    piezaRetorno: number,
+    maxPz: number,
+    um: string,
+    commodity: number,
+    gpoCompra: number,
+    spcs: string,
+    costoUnitario: number,
+    moneda: string,
+    stdPack: number,
+    indicador: string,
+    proyeed: string,
+    mro: string
+}
+
 export type Pedido = {
     folioPedido: string;
     nombreSolicitante: string;

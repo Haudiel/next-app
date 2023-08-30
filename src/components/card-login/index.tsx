@@ -3,6 +3,9 @@ import { useRouter } from 'next/router';
 import { Box, Button, FormControl, FormLabel, Input, VStack, Card, CardBody, Image, Center, Alert, AlertDescription, AlertIcon, AlertTitle, Collapse } from '@chakra-ui/react';
 import axios from 'axios';
 
+import Cookies from 'js-cookie';
+import jwt from 'jsonwebtoken'
+
 interface LoginFormProps {
     onLogin: (username: string, password: string) => void;
 }
@@ -16,6 +19,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const [accessMessage, setAccessMessage] = useState('');;
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const router = useRouter();
+
+    const handleLogin = async () => {
+        const fakeToken = jwt.sign({ employeeNumber }, 'mi_secreto');
+        const response = await axios.get<ResponseData>(`https://localhost:7063/AdminUser/Access?emplid=${employeeNumber}`)
+
+        Cookies.set('token', fakeToken, { expires: 7 });
+        setAccessMessage(response.data.mensaje);
+        if (response.data.mensaje === 'Access') {
+            setShowSuccessAlert(true);
+            const redirectTimeout = setTimeout(() => {
+                router.push('/pageOne');
+            }, 1500);
+        }
+    };
 
     const handleCheckAccess = async () => {
         try {
