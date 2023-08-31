@@ -10,11 +10,16 @@ import MaterialReactTable, { MRT_Row, MRT_ColumnDef } from "material-react-table
 import React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiMenu, FiBell } from "react-icons/fi";
+import { useRouter } from "next/router";
 
 
 const MobileNav = ({ onOpend, ...rest }: MobileProps) => {
+    
+    const router = useRouter()
+    console.log(router.query)
+    const noEmpelado = router.query.employeeNumber
     const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
-    const noEmpelado = localStorage.getItem('noEmpleado')
+    
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = React.useRef(null)
     const [valueData, setValueData] = useState<any>({})

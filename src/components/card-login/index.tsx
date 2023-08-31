@@ -4,7 +4,6 @@ import { Box, Button, FormControl, FormLabel, Input, VStack, Card, CardBody, Ima
 import axios from 'axios';
 
 import Cookies from 'js-cookie';
-import jwt from 'jsonwebtoken'
 
 interface LoginFormProps {
     onLogin: (username: string, password: string) => void;
@@ -21,6 +20,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const router = useRouter();
 
     const handleLogin = async () => {
+        var jwt = require('jsonwebtoken');
         const fakeToken = jwt.sign({ employeeNumber }, 'mi_secreto');
         const response = await axios.get<ResponseData>(`https://localhost:7063/AdminUser/Access?emplid=${employeeNumber}`)
 
@@ -42,7 +42,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             if (response.data.mensaje === 'Access') {
                 setShowSuccessAlert(true);
                 const redirectTimeout = setTimeout(() => {
-                    router.push('/pageOne');
+                    router.push(`/pageOne/${employeeNumber}`);
                 }, 1500);
             }
         } catch (error) {
